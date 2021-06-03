@@ -1,4 +1,4 @@
-const express = require("express");
+import express from "express";
 const connectDB = require("./config/db");
 
 const app = express();
@@ -7,7 +7,13 @@ const app = express();
 
 connectDB();
 
-app.get("/", (req: any, res: any) => res.send("API Running"));
+// Init Middleware
+
+app.use(express.json());
+
+app.get("/", (req: express.Request, res: express.Response) =>
+  res.send("API Running")
+);
 
 // Define Routes
 app.use("/api/users", require("./routes/api/users"));
