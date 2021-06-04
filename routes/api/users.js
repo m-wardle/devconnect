@@ -24,6 +24,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const express = __importStar(require("express"));
 const gravatar_1 = __importDefault(require("gravatar"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const config_1 = __importDefault(require("config"));
 const express_validator_1 = require("express-validator");
 const User_1 = require("../../models/User");
 const router = express.Router();
@@ -40,7 +42,9 @@ router.post("/", [
     try {
         const userCheck = await User_1.User.findOne({ email });
         if (userCheck) {
-            res.status(400).json({ errors: [{ msg: "User already exists" }] });
+            return res
+                .status(400)
+                .json({ errors: [{ msg: "User already exists" }] });
         }
         const avatar = gravatar_1.default.url(email, {
             s: "200",
@@ -56,7 +60,16 @@ router.post("/", [
         const salt = await bcryptjs_1.default.genSalt(10);
         user.password = await bcryptjs_1.default.hash(password, salt);
         await user.save();
-        res.send("User registered");
+        const payload = {
+            user: {
+                id: user.id,
+            },
+        };
+        jsonwebtoken_1.default.sign(payload, config_1.default.get("jwtSecret"), { expiresIn: 360000 }, (err, token) => {
+            if (err)
+                throw err;
+            res.json({ token });
+        });
     }
     catch (err) {
         console.error(err.message);
