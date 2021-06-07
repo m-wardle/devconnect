@@ -18,7 +18,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 const express = __importStar(require("express"));
+const auth_1 = __importDefault(require("../../middleware/auth"));
+const User_1 = __importDefault(require("../../models/User"));
 const router = express.Router();
-router.get("/", (req, res) => res.send("Auth route"));
+router.get("/", auth_1.default, async (req, res) => {
+    try {
+        const user = await User_1.default.findById(req.user.id).select("-password");
+        res.json(user);
+    }
+    catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+});
 module.exports = router;
