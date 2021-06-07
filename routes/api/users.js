@@ -27,7 +27,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = __importDefault(require("config"));
 const express_validator_1 = require("express-validator");
-const User_1 = require("../../models/User");
+const User_1 = __importDefault(require("../../models/User"));
 const router = express.Router();
 router.post("/", [
     express_validator_1.check("name", "Name is required").not().isEmpty(),
@@ -38,9 +38,9 @@ router.post("/", [
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    const { name, email, password } = req.body;
+    const { name, email, password, } = req.body;
     try {
-        const userCheck = await User_1.User.findOne({ email });
+        const userCheck = await User_1.default.findOne({ email });
         if (userCheck) {
             return res
                 .status(400)
@@ -51,7 +51,7 @@ router.post("/", [
             r: "pg",
             d: "mm",
         });
-        const user = new User_1.User({
+        const user = new User_1.default({
             name,
             email,
             avatar,

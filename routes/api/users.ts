@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "config";
 import { check, validationResult } from "express-validator";
-import { User, IUser } from "../../models/User";
+import User, { IUser } from "../../models/User";
 const router = express.Router();
 
 // @route   POST api/users
@@ -26,7 +26,11 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password } = req.body;
+    const {
+      name,
+      email,
+      password,
+    }: { name: string; email: string; password: string } = req.body;
 
     try {
       // See if user exists
